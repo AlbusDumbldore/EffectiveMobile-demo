@@ -1,10 +1,37 @@
 {
-  "name": "EffectiveMobile",
+  "name": "effectivemobile",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Техническое задание для компании Effective Mobile:",
+  "homepage": "https://github.com/AlbusDumbldore/EffectiveMobile-demo#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlbusDumbldore/EffectiveMobile-demo.git"
   },
-  "private": true
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node ./src/main.ts",
+    "start:prod": "node ./dist/main.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.2"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 120,
+    "tabWidth": 2,
+    "endOfLine": "auto"
+  }
 }
