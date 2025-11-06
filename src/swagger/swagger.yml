@@ -1,0 +1,321 @@
+openapi: 3.1.0
+info:
+  title: API для работы с пользователями
+  description: Тестовое задание - сервис управления пользователями
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: Локальный сервер (разработка)
+
+tags:
+  - name: User
+    description: Действия с пользователями
+
+paths:
+  /user/register:
+    post:
+      tags:
+        - User
+      summary: Регистрация нового пользователя
+      description: Создание нового пользователя с уникальным Email
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userRegister'
+        required: true
+
+      responses:
+        '200':
+          description: Пользователь зарегистрирован успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/success'
+
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+
+        '500':
+          description: Произошла ошибка на сервере. Повторите попытку позднее.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+
+
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: Аутентификация пользователя
+      description: Аутентифицирует зарегистрированного пользователя
+
+      requestBody:
+        description: Возвращает JWT-токен при успешной аутентификации.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userLogin'
+        required: true
+
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tokenPair'
+
+        '401':
+          description: Неверный email или пароль
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Получить пользователя по ID
+      description: Доступно только администратору или самому пользователю.
+      security:
+        - bearer: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        '403':
+          description: Недостаточно прав для просмотра
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+
+  /users:
+    get:
+      tags:
+        - User
+      summary: Получить список всех пользователей
+      description: Возвращает список юзеров c пагинацией. Доступно только пользователям с ролью admin.
+      security:
+        - bearer: [ ]
+      parameters:
+        - name: limit
+          in: query
+          description: Количество записей на странице (макс. 100)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: offset
+          in: query
+          description: Сколько записей пропустить
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/userResponse'
+                  total:
+                    type: integer
+                    description: Общее количество пользователей в системе
+                  limit:
+                    type: integer
+                    description: Запрошенное количество записей
+                  offset:
+                    type: integer
+                    description: Количество пропущенных записей
+        '403':
+          description: Недостаточно прав для просмотра
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+
+  /users/{id}/block:
+    patch:
+      tags:
+        - Users
+      summary: Блокировка пользователя
+      description: Блокирует пользователя (isActive = false). Доступно администратору или самому пользователю.
+      security:
+        - bearer: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Пользователь успешно заблокирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        '403':
+          description: Недостаточно прав для блокировки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    userRegister:
+      type: object
+      required: [ fullName, birthDate, email, password ]
+      properties:
+        fullName:
+          type: string
+          description: Полное имя пользователя (ФИО)
+          example: Сорокин Сергей Валентинович
+        birthDate:
+          type: string
+          format: date
+          description: Дата рождения в формате YYYY-MM-DD
+          example: "2000-12-31"
+        email:
+          type: string
+          format: email
+          description: Уникальный email
+          example: sorokin@example.com
+        password:
+          type: string
+          description: Пароль (минимум 6 символов)
+          example: "myPass112578"
+        role:
+          type: string
+          enum: [ user, admin ]
+          default: user
+          description: Роль пользователя (по умолчанию — user)
+
+    userLogin:
+      type: object
+      required: [ email, password ]
+      properties:
+        email:
+          type: string
+          format: email
+          example: sorokin@example.com
+        password:
+          type: string
+          example: "myPass112578"
+
+    userResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        fullName:
+          type: string
+          example: Сорокин Сергей Валентинович
+        birthDate:
+          type: string
+          format: date
+          example: "2000-12-31"
+        email:
+          type: string
+          format: email
+          example: sorokin@example.com
+        role:
+          type: string
+          enum: [ user, admin ]
+          example: user
+        isActive:
+          type: boolean
+          description: true — активен, false — заблокирован
+          example: true
+
+    success:
+      type: object
+      properties:
+        success:
+          type: boolean
+
+    tokenPair:
+      type: object
+
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+
+    badRequest:
+      type: object
+
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+          example: 'Неверный логин или пароль'
+
+    limit:
+      name: limit
+      required: false
+      in: query
+      schema:
+        type: number
+        example: 10
+
+    offset:
+      name: offset
+      required: false
+      in: query
+      schema:
+        type: number
+        example: 0
