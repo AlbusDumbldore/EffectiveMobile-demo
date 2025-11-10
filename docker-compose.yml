@@ -1,0 +1,19 @@
+services:
+  postgres:
+    container_name: effective-mobile-postgres
+    image: postgres:17-alpine
+    restart: unless-stopped
+    ports:
+      - "5437:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: backend
+
+  redis:
+    container_name: effective-mobile-redis
+    image: redis:7-alpine
+    command: redis-server --requirepass redispassword
+    restart: unless-stopped
+    ports:
+      - "6377:6379"
