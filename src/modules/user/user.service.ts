@@ -6,7 +6,7 @@ import { redisRefreshTokenKey, redisTempMailKey } from '../../cache/redis.keys';
 import { RedisService } from '../../cache/redis.service';
 import { PaginationDto, TimeInSeconds } from '../../common';
 import { LoginHistoryEntity, UserEntity } from '../../database/entities';
-import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../exceptions';
+import { BadRequestException, NotFoundException, UnauthorizedException } from '../../exceptions';
 import { JwtService } from '../../jwt/jwt.service';
 import logger from '../../logger';
 import { LoginDto, RegisterDto } from './dto';
@@ -94,6 +94,7 @@ export class UserService {
 
   async blockOrUnblockUser(id: UserEntity['id'], isActive: UserEntity['isActive']) {
     const user = await this.profile(id);
+
     user.isActive = isActive;
 
     await user.save();
@@ -121,6 +122,7 @@ export class UserService {
       birthDate: dto.birthDate,
       email: dto.email,
       password: dto.password,
+      role: dto.role || 'user',
     });
 
     return this.profile(created.id);
@@ -139,11 +141,6 @@ export class UserService {
     if (!(await compare(password, user.password))) {
       this.saveLoginEvent({ ip, email, success: false, failReason: 'Incorrect password' });
       throw new UnauthorizedException('User does not exists or password is wrong');
-    }
-
-    if (!user.isActive) {
-      this.saveLoginEvent({ ip, email, success: false, failReason: 'User blocked' });
-      throw new ForbiddenException();
     }
 
     const tokens = this.jwtService.makeTokenPair(user);

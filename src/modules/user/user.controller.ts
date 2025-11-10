@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
 import { IdNumberDto, PaginationDto } from '../../common';
-import { JwtGuard, RoleGuard } from '../../guards';
+import { JwtAllowBlockedGuard, JwtGuard, RoleGuard } from '../../guards';
 import { JwtService } from '../../jwt/jwt.service';
 import { validate } from '../../validation';
 import { LoginDto, RegisterDto, TokenDto } from './dto';
@@ -21,6 +21,8 @@ export class UserController {
     const authentication = JwtGuard(this.jwtService);
     const authorization = [authentication, RoleGuard(UserRole.admin)];
 
+    const allowBlocked = JwtAllowBlockedGuard(this.jwtService);
+
     this.router.post('/register', (req: Request, res: Response) => this.register(req, res));
     this.router.post('/login', (req: Request, res: Response) => this.login(req, res));
     this.router.post('/refresh', (req: Request, res: Response) => this.refresh(req, res));
@@ -28,9 +30,10 @@ export class UserController {
 
     this.router.get('/profile', authentication, (req: Request, res: Response) => this.profile(req, res));
     this.router.post('/me/block', authentication, (req: Request, res: Response) => this.blockSelf(req, res));
-    this.router.post('/me/unblock', authentication, (req: Request, res: Response) => this.unblockSelf(req, res));
+    this.router.post('/me/unblock', allowBlocked, (req: Request, res: Response) => this.unblockSelf(req, res));
 
     // Admin methods.
+    this.router.get('/:id', ...authorization, (req: Request, res: Response) => this.profileAdmin(req, res));
     this.router.get('/', ...authorization, (req: Request, res: Response) => this.list(req, res));
     this.router.post('/:id/block', ...authorization, (req: Request, res: Response) => this.blockUser(req, res));
     this.router.post('/:id/unblock', ...authorization, (req: Request, res: Response) => this.unblockUser(req, res));
@@ -56,6 +59,13 @@ export class UserController {
     const {
       user: { id },
     } = res.locals;
+    const result = await this.service.profile(id);
+
+    res.json(result);
+  }
+
+  async profileAdmin(req: Request, res: Response) {
+    const { id } = validate(IdNumberDto, req.params);
     const result = await this.service.profile(id);
 
     res.json(result);
