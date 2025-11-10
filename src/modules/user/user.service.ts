@@ -4,7 +4,7 @@ import { CronJob } from 'cron';
 import { inject, injectable } from 'inversify';
 import { redisRefreshTokenKey, redisTempMailKey } from '../../cache/redis.keys';
 import { RedisService } from '../../cache/redis.service';
-import { TimeInSeconds } from '../../common';
+import { PaginationDto, TimeInSeconds } from '../../common';
 import { LoginHistoryEntity, UserEntity } from '../../database/entities';
 import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from '../../exceptions';
 import { JwtService } from '../../jwt/jwt.service';
@@ -81,6 +81,23 @@ export class UserService {
     if (!user) {
       throw new NotFoundException();
     }
+
+    return user;
+  }
+
+  async getAllUsers(params: PaginationDto) {
+    logger.info(`Чтение списка пользователей`);
+    const { limit, offset } = params;
+    const { rows, count } = await UserEntity.findAndCountAll({ limit, offset });
+
+    return { total: count, limit, offset, data: rows };
+  }
+
+  async blockOrUnblockUser(id: UserEntity['id'], active: UserEntity['isActive']) {
+    const user = await this.profile(id);
+    user.isActive = active;
+
+    await user.save();
 
     return user;
   }
@@ -167,5 +184,11 @@ export class UserService {
 
   private async hashPassword(raw: string): Promise<string> {
     return hash(raw, 10);
+  }
+
+  async logout(refreshToken: string) {
+    await this.redis.delete(redisRefreshTokenKey(refreshToken));
+
+    return true;
   }
 }
