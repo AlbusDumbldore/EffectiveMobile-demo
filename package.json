@@ -36,13 +36,23 @@
     "endOfLine": "auto"
   },
   "dependencies": {
+    "@redis/client": "^5.9.0",
     "@types/node": "^24.10.0",
+    "axios": "^1.13.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "cron": "^4.3.4",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "inversify": "^7.10.4",
+    "koffi": "^2.14.1",
+    "pg": "^8.16.3",
+    "pino": "^10.1.0",
+    "pino-pretty": "^13.1.2",
+    "redis": "^5.9.0",
     "reflect-metadata": "^0.2.2",
+    "sequelize": "^6.37.7",
+    "sequelize-typescript": "^2.1.6",
     "swagger-ui-express": "^5.0.1",
     "yaml": "^2.8.1"
   }
