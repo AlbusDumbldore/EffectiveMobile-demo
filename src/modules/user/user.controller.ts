@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
-import { PaginationDto } from '../../common';
+import { IdNumberDto, PaginationDto } from '../../common';
 import { JwtGuard, RoleGuard } from '../../guards';
 import { JwtService } from '../../jwt/jwt.service';
 import { validate } from '../../validation';
@@ -27,8 +27,13 @@ export class UserController {
     this.router.post('/logout', authentication, (req: Request, res: Response) => this.logout(req, res));
 
     this.router.get('/profile', authentication, (req: Request, res: Response) => this.profile(req, res));
+    this.router.post('/me/block', authentication, (req: Request, res: Response) => this.blockSelf(req, res));
+    this.router.post('/me/unblock', authentication, (req: Request, res: Response) => this.unblockSelf(req, res));
 
+    // Admin methods.
     this.router.get('/', ...authorization, (req: Request, res: Response) => this.list(req, res));
+    this.router.post('/:id/block', ...authorization, (req: Request, res: Response) => this.blockUser(req, res));
+    this.router.post('/:id/unblock', ...authorization, (req: Request, res: Response) => this.unblockUser(req, res));
   }
 
   async register(req: Request, res: Response) {
@@ -60,6 +65,42 @@ export class UserController {
     const payload = validate(PaginationDto, req.query);
 
     const result = await this.service.getAllUsers(payload);
+
+    res.json(result);
+  }
+
+  async blockUser(req: Request, res: Response) {
+    const { id } = validate(IdNumberDto, req.params);
+
+    const result = await this.service.blockOrUnblockUser(id, false);
+
+    res.json(result);
+  }
+
+  async unblockUser(req: Request, res: Response) {
+    const { id } = validate(IdNumberDto, req.params);
+
+    const result = await this.service.blockOrUnblockUser(id, true);
+
+    res.json(result);
+  }
+
+  async blockSelf(req: Request, res: Response) {
+    const {
+      user: { id },
+    } = res.locals;
+
+    const result = await this.service.blockOrUnblockUser(id, false);
+
+    res.json(result);
+  }
+
+  async unblockSelf(req: Request, res: Response) {
+    const {
+      user: { id },
+    } = res.locals;
+
+    const result = await this.service.blockOrUnblockUser(id, true);
 
     res.json(result);
   }

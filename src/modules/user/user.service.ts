@@ -93,9 +93,9 @@ export class UserService {
     return { total: count, limit, offset, data: rows };
   }
 
-  async blockOrUnblockUser(id: UserEntity['id'], active: UserEntity['isActive']) {
+  async blockOrUnblockUser(id: UserEntity['id'], isActive: UserEntity['isActive']) {
     const user = await this.profile(id);
-    user.isActive = active;
+    user.isActive = isActive;
 
     await user.save();
 

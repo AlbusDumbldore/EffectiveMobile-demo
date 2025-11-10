@@ -5,8 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:3000/api
-    description: Локальный сервер (разработка)
+      - url: http://localhost:3000/api
 
 tags:
   - name: User
@@ -175,7 +174,7 @@ paths:
       tags:
         - Users
       summary: Блокировка пользователя
-      description: Блокирует пользователя (isActive = false). Доступно администратору или самому пользователю.
+      description: Блокирует пользователя (isActive = false). Доступно администратору.
       security:
         - bearer: [ ]
       parameters:
@@ -204,6 +203,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/badRequest'
+
+  /users/me/block:
+    post:
+      tags:
+        - Users
+      summary: Заблокировать свой аккаунт
+      description: Позволяет авторизованному пользователю заблокировать собственный аккаунт (установить статус неактивным).
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Аккаунт успешно заблокирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        '401':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
+
+  /users/me/unblock:
+    post:
+      tags:
+        - Users
+      summary: Разблокировать свой аккаунт
+      description: Позволяет авторизованному пользователю разблокировать собственный аккаунт (установить статус активным).
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Аккаунт успешно разблокирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        '401':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
 
 components:
   securitySchemes:
