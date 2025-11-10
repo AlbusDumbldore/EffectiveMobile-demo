@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { CronJob } from 'cron';
 import { inject, injectable } from 'inversify';
 import { redisRefreshTokenKey, redisTempMailKey } from '../../cache/redis.keys';
@@ -98,6 +98,8 @@ export class UserService {
       throw new BadRequestException('User with this email already exists');
     }
 
+    dto.password = await this.hashPassword(dto.password);
+
     const created = await UserEntity.create({
       email: dto.email,
       name: dto.fullname,
@@ -161,5 +163,9 @@ export class UserService {
     await this.setNewRefreshToken(user.id, pair.refreshToken);
 
     return pair;
+  }
+
+  private async hashPassword(raw: string): Promise<string> {
+    return hash(raw, 10);
   }
 }
