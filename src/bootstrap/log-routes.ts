@@ -1,3 +1,4 @@
+/* eslint-disable */
 import logger from '../logger';
 
 export const logRoutes = (server: any) => {

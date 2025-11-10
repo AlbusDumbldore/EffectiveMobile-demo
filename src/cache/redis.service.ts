@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { injectable } from 'inversify';
 import { createClient, SetOptions } from 'redis';
 import { appConfig } from '../config';

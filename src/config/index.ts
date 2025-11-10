@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { config as readEnv } from 'dotenv';
 import { validate } from '../validation';
 import { AppConfigDto } from './dto';

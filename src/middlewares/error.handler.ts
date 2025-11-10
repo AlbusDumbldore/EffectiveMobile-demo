@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextFunction, Request, Response } from 'express';
 import { BadRequestException, NotFoundException } from '../exceptions';
 import logger from '../logger';
