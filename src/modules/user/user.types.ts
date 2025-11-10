@@ -11,3 +11,11 @@ export type User = {
   password: string;
   role: UserRole;
 };
+
+export type LoginEvent = {
+  time: string;
+  ip: string;
+  email: string;
+  success: boolean;
+  failReason?: string;
+};

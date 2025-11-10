@@ -23,7 +23,7 @@ export class UserEntity extends Model {
     allowNull: false,
     defaultValue: true,
   })
-  public active: boolean;
+  public isActive: boolean;
 
   @Column({
     type: DataType.STRING,
