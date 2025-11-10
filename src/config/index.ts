@@ -2,6 +2,7 @@
 import { config as readEnv } from 'dotenv';
 import { validate } from '../validation';
 import { AppConfigDto } from './dto';
+import process from 'node:process';
 
 readEnv();
 
@@ -21,6 +22,11 @@ const rawConfig: EnvStructure<AppConfigDto> = {
     username: process.env.POSTGRESQL_USERNAME,
     password: process.env.POSTGRESQL_PASSWORD,
     database: process.env.POSTGRESQL_DATABASE,
+  },
+
+  jwt: {
+    accessSecret: process.env.JWT_ACCESS_SECRET,
+    refreshSecret: process.env.JWT_REFRESH_SECRET,
   },
 };
 
