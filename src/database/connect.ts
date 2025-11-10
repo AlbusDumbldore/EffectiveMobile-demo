@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { appConfig } from '../config';
 import logger from '../logger';
-import { UserEntity } from './entities/user.entity';
+import { entities } from './entities';
 
 export const connectToPostgres = async () => {
   // Create connection
@@ -11,7 +11,7 @@ export const connectToPostgres = async () => {
     logging: false,
   });
 
-  connection.addModels([UserEntity]);
+  connection.addModels(entities);
 
   // Ping database
   try {

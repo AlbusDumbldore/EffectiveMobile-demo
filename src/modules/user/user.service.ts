@@ -75,7 +75,6 @@ export class UserService {
     logger.info(`Чтение профиля userId=${id}`);
     const user = await UserEntity.findByPk(id, {
       attributes: { exclude: ['password'] },
-      include: [UserEntity],
     });
 
     if (!user) {
@@ -118,8 +117,9 @@ export class UserService {
     dto.password = await this.hashPassword(dto.password);
 
     const created = await UserEntity.create({
+      fullName: dto.fullName,
+      birthDate: dto.birthDate,
       email: dto.email,
-      name: dto.fullname,
       password: dto.password,
     });
 

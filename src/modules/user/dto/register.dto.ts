@@ -4,7 +4,7 @@ export class RegisterDto {
   @IsString()
   @MinLength(3)
   @MaxLength(50)
-  fullname: string;
+  fullName: string;
 
   @IsDateString({}, { message: 'Дата рождения должна быть в формате YYYY-MM-DD' })
   birthDate: Date;

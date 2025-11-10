@@ -80,7 +80,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/badRequest'
 
-  /users/{id}:
+  /user/{id}:
     get:
       tags:
         - Users
@@ -115,7 +115,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/badRequest'
 
-  /users:
+  /user:
     get:
       tags:
         - User
@@ -169,7 +169,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/badRequest'
 
-  /users/{id}/block:
+  /user/{id}/block:
     patch:
       tags:
         - Users
@@ -204,14 +204,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/badRequest'
 
-  /users/me/block:
+  /user/me/block:
     post:
       tags:
         - Users
       summary: Заблокировать свой аккаунт
       description: Позволяет авторизованному пользователю заблокировать собственный аккаунт (установить статус неактивным).
       security:
-        - bearerAuth: [ ]
+        - bearer: [ ]
       responses:
         '200':
           description: Аккаунт успешно заблокирован
@@ -224,14 +224,14 @@ paths:
         '404':
           description: Пользователь не найден
 
-  /users/me/unblock:
+  /user/me/unblock:
     post:
       tags:
         - Users
       summary: Разблокировать свой аккаунт
       description: Позволяет авторизованному пользователю разблокировать собственный аккаунт (установить статус активным).
       security:
-        - bearerAuth: [ ]
+        - bearer: [ ]
       responses:
         '200':
           description: Аккаунт успешно разблокирован

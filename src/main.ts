@@ -22,11 +22,12 @@ const bootstrap = async () => {
 
   const server = express();
 
+  server.use(express.json());
   server.use(SessionMiddleware);
 
   const userController = appContainer.get(UserController);
 
-  server.use('/user', userController.router);
+  server.use('/api/user', userController.router);
 
   setupSwagger(server);
 
