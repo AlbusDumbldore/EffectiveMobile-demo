@@ -170,7 +170,7 @@ paths:
                 $ref: '#/components/schemas/badRequest'
 
   /user/{id}/block:
-    patch:
+    post:
       tags:
         - Users
       summary: Блокировка пользователя
@@ -193,6 +193,41 @@ paths:
                 $ref: '#/components/schemas/userResponse'
         '403':
           description: Недостаточно прав для блокировки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badRequest'
+
+  /user/{id}/unblock:
+    post:
+      tags:
+        - Users
+      summary: Разблокировка пользователя
+      description: Разлокирует пользователя (isActive = true). Доступно администратору.
+      security:
+        - bearer: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Пользователь успешно разблокирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        '403':
+          description: Недостаточно прав для разблокировки
           content:
             application/json:
               schema:
